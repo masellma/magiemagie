@@ -7,6 +7,9 @@ package atos.magiemagie.test;
 
 import atos.magiemagie.entity.Carte;
 import atos.magiemagie.entity.Joueur;
+import atos.magiemagie.entity.Partie;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -33,6 +36,20 @@ public class MagieTest {
        
        em.getTransaction().begin();
        em.persist(player1);
+       em.getTransaction().commit();
+   }
+//   @Test
+   public void createPartie(){
+       EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
+       
+       Partie partie = new Partie();
+       
+       
+       em.getTransaction().begin();
+       
+       partie.setNom("Partie1");
+       em.persist(partie);
+       
        em.getTransaction().commit();
    }
     

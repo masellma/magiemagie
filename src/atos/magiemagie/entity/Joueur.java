@@ -31,6 +31,8 @@ public class Joueur implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(nullable = false)
+    private Long ordre;    
     @Column(unique = true)
     private String pseudo;
     private String avatar;
@@ -38,9 +40,10 @@ public class Joueur implements Serializable {
     private Long nbPartiesJouees;
     @Column(nullable = false)
     private Long nbPartiesGagnees;
-    private enum EtatJoueur{PAS_LA_MAIN, A_LA_MAIN, SOMMEIL_PROFOND, PERDU};
+    public enum EtatJoueur{PAS_LA_MAIN, A_LA_MAIN, SOMMEIL_PROFOND, PERDU, GAGNE};
    
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EtatJoueur etatJoueur;
     
     @ManyToOne
@@ -49,6 +52,22 @@ public class Joueur implements Serializable {
     
     @OneToMany(mappedBy = "joueur")
     private List<Carte> cartes =  new ArrayList<>();
+
+    public Long getOrdre() {
+        return ordre;
+    }
+
+    public void setOrdre(Long ordre) {
+        this.ordre = ordre;
+    }
+
+    public EtatJoueur getEtatJoueur() {
+        return etatJoueur;
+    }
+
+    public void setEtatJoueur(EtatJoueur etatJoueur) {
+        this.etatJoueur = etatJoueur;
+    }
     
     
     public String getPseudo() {
