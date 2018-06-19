@@ -18,10 +18,16 @@ public class PartieServiceTest {
     
     private PartieService service = new PartieService();
     
-    @Test
+//    @Test
     public void creerNouvellePartieOK(){
         Partie p = service.creerNouvellePartie("Blabla");
         assertNotNull(p.getId());
     }
+    
+    @Test
+    public void demarrerPartirOK(){
+        Partie p = service.demarrerPartie(1L);
+    }
+    
     
 }

@@ -27,7 +27,7 @@ public class JoueurDAO {
        
        EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
        
-       Query query = em.createQuery("SELECT j.pseudo FROM Joueur j JOIN j.partieActuelle p WHERE j.pseudo = :pseudo");
+       Query query = em.createQuery("SELECT j FROM Joueur j JOIN j.partieActuelle p WHERE j.pseudo = :pseudo");
        query.setParameter("pseudo", pseudo);
        
        List<Joueur> joueursTrouves = query.getResultList();
@@ -37,6 +37,21 @@ public class JoueurDAO {
        
        
        return joueursTrouves.get(0);
+   }
+   
+   public Joueur rechercherParOrdre(Long ordre, Long idPartie){
+       
+       EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
+       
+       Query query = em.createQuery("SELECT j FROM Joueur j JOIN j.partieActuelle p WHERE p.id = :idPartie AND j.ordre = :ordre ");
+       query.setParameter("idPartie", idPartie);
+       query.setParameter("ordre", ordre);
+       
+       List<Joueur> joueurTrouve = query.getResultList();
+       if (joueurTrouve ==  null)
+           return null;
+       
+       return joueurTrouve.get(0);
    }
    
    public long definirOrdre(Long idPartie){
@@ -62,6 +77,8 @@ public class JoueurDAO {
         em.merge(joueur);
         em.getTransaction().commit();
     }
+
+    
    
    
 }

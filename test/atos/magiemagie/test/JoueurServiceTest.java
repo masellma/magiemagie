@@ -21,14 +21,47 @@ public class JoueurServiceTest {
     private JoueurService joueurService = new JoueurService();
     private PartieService partieService = new PartieService();
     
-    @Test
+//    @Test
     public void rejoindrePartieOK(){
         
         
-        Partie nouvellePartie = partieService.creerNouvellePartie("Partie 1");
+        Partie nouvellePartie = partieService.creerNouvellePartie("Pathfinder");
         
-        
-        joueurService.rejoindrePartie("maxime", "blabla", nouvellePartie.getId());
+        joueurService.rejoindrePartie("Cyrus", "blabla", nouvellePartie.getId());
+        joueurService.rejoindrePartie("Baldir", "blabla", nouvellePartie.getId());
+        joueurService.rejoindrePartie("Angraal", "blabla", nouvellePartie.getId());
+        joueurService.rejoindrePartie("Alura", "blabla", nouvellePartie.getId());
     }
+    
+    
+//    @Test
+    public void orderJoueursOK(){
+        Partie ordreJoueursOK = partieService.creerNouvellePartie("OrdreJoueursOK");
+        joueurService.rejoindrePartie("Cyrus", "Melusine", ordreJoueursOK.getId());
+        joueurService.rejoindrePartie("Baldir", "Quelaag", ordreJoueursOK.getId());
+        Joueur jTest = joueurService.rejoindrePartie("Angraal", "Izalith", ordreJoueursOK.getId());
+        
+        assertEquals(3,(long) jTest.getOrdre());
+        System.out.println(jTest.getOrdre());
+    }
+    
+    @Test
+    public void passerTourOK(){
+        
+//       Partie passerTourOK = partieService.creerNouvellePartie("PasserTourOk");
+//       joueurService.rejoindrePartie("Cyrus", "Quelaag", passerTourOK.getId());
+//       joueurService.rejoindrePartie("Baldir", "Izalith", passerTourOK.getId());
+//       joueurService.rejoindrePartie("Angraal", "Melusine", passerTourOK.getId());
+//       joueurService.rejoindrePartie("Alura", "Quelaana", passerTourOK.getId());
+//       partieService.demarrerPartie(1L);
+//       joueurService.passerSonTour("Angraal", 1L);
+        joueurService.definirJoueurSuivant("Alura", 1L);
+       
+        
+        
+        
+        
+    }
+    
     
 }

@@ -27,15 +27,24 @@ public class Carte implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    public enum ingredients{BAVE_CRAPAUD, CORNE_LICORNE, MANDRAGORE, LAPIS_LAZULI, AILE_CHAUVE_SOURIS};
+    public enum TypeCarte{BAVE_CRAPAUD, CORNE_LICORNE, MANDRAGORE, LAPIS_LAZULI, AILE_CHAUVE_SOURIS};
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ingredients typeCarte;
+    private TypeCarte typeCarte;
     
     @ManyToOne
     private Joueur joueur;
 
+    public TypeCarte getTypeCarte() {
+        return typeCarte;
+    }
+
+    public void setTypeCarte(TypeCarte typeCarte) {
+        this.typeCarte = typeCarte;
+    }
+
+    
     public Long getId() {
         return id;
     }
