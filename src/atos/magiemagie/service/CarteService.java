@@ -13,6 +13,7 @@ import atos.magiemagie.entity.Joueur;
 import atos.magiemagie.entity.Partie;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
@@ -67,7 +68,7 @@ public class CarteService {
         if ( (card1Compare == "CORNE_LICORNE" && card2Compare == "BAVE_CRAPAUD") || (card1Compare == "BAVE_CRAPAUD" && card2Compare == "CORNE_LICORNE"))
             sortInvisibilite(idPartie, joueurPseudo);
         else if ( (card1Compare == "CORNE_LICORNE" && card2Compare == "MANDRAGORE") || (card1Compare == "MANDRAGORE" && card2Compare == "CORNE_LICORNE"))
-            sortHypnose();
+            sortHypnose(idPartie, joueurPseudo);
         else if ((card1Compare == "LAPIS_LAZULI" && card2Compare == "AILE_CHAUVE_SOURIS") || (card1Compare == "AILE_CHAUVE_SOURIS" && card2Compare == "LAPIS_LAZULI"))
             sortDivination();
         else if ((card1Compare == "LAPIS_LAZULI" && card2Compare == "BAVE_CRAPAUD") || (card1Compare == "BAVE_CRAPAUD" && card2Compare == "LAPIS_LAZULI"))
@@ -88,22 +89,50 @@ public class CarteService {
     
     public void sortInvisibilite(Long idPartie, String nomLanceur) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
         
-        Query query = em.createQuery("SELECT j FROM Joueur j JOIN j.partieActuelle p WHERE p.id = :idPartie AND j.pseudo != :nomLanceur");
-        query.setParameter("idPartie", idPartie);
-        query.setParameter("nomLanceur", nomLanceur);
-        Joueur joueurLanceur = joueurDAO.rechercherParPseudo(nomLanceur);
-        
-        List<Joueur> joueurs = query.getResultList();
+        List<Joueur> joueurs = carteDAO.getJoueurPartie(idPartie);
         
         for (Joueur joueur : joueurs){
             volerUneCarte(nomLanceur, joueur.getPseudo(), idPartie);
         }
     }
     
-    public void sortHypnose() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void sortHypnose(Long idPartie, String nomLanceur) {
+        
+        System.out.print("Choisissez votre cible: ");
+        Scanner selectTarget = new Scanner(System.in);
+        String cible = selectTarget.nextLine();
+        Joueur joueurLanceur = joueurDAO.rechercherParPseudo(nomLanceur);
+        Joueur joueurCible = joueurDAO.rechercherParPseudo(cible);
+        
+        if (joueurCible == null) {
+            while (joueurCible == null) {                
+                
+            System.out.println("Aucun joueur à cette table ne porte ce nom. Veuillez entrer un nom valide");
+            selectTarget = new Scanner(System.in);
+            cible = selectTarget.nextLine();
+            joueurCible = joueurDAO.rechercherParPseudo(cible);
+            }
+        }
+        
+        
+        
+        Partie partie = PartieDAO.rechercherParId(idPartie);
+        List<Carte> joueurCibleCarte = carteDAO.getJoueurCarte(cible, partie);
+        
+        for (int i = 0; i < 3; i++) {
+            volerUneCarte(nomLanceur, cible, idPartie);
+        }
+        System.out.print("Choisissez une carte:");
+        Scanner selectCard = new Scanner(System.in);
+        Long card = selectCard.nextLong();
+        Carte carteChoisi = carteDAO.rechercherParId(card);
+        carteChoisi.setJoueur(joueurCible);
+        carteDAO.modifier(carteDAO.rechercherParId(card));
+        
+        
+        
+        
     }
 
     public void sortDivination() {
@@ -115,7 +144,26 @@ public class CarteService {
     }
 
     public void sortSommeilProfond() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        System.out.print("Choisissez votre cible: ");
+        Scanner selectTarget = new Scanner(System.in);
+        String cible = selectTarget.nextLine();
+        Joueur joueurCible = joueurDAO.rechercherParPseudo(cible);
+        
+        if (joueurCible == null) {
+            while (joueurCible == null) {                
+                
+            System.out.println("Aucun joueur à cette table ne porte ce nom. Veuillez entrer un nom valide");
+            selectTarget = new Scanner(System.in);
+            cible = selectTarget.nextLine();
+            joueurCible = joueurDAO.rechercherParPseudo(cible);
+            }
+        }
+        
+        joueurCible.setEtatJoueur(Joueur.EtatJoueur.SOMMEIL_PROFOND);
+        joueurDAO.modifier(joueurCible);
+        
+        
     }
     
     

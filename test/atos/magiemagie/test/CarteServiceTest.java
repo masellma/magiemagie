@@ -20,7 +20,7 @@ public class CarteServiceTest {
    @Test
    public void lancerSortInvisibiliteOK(){
        
-       carteServ.lancerSort(13L, 14L, "Baldir", 1L);
+       carteServ.lancerSort(6L, 4L, "Cyrus", 1L);
    }
     
 }

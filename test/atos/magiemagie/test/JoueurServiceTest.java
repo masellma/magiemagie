@@ -54,8 +54,8 @@ public class JoueurServiceTest {
 //       joueurService.rejoindrePartie("Angraal", "Melusine", passerTourOK.getId());
 //       joueurService.rejoindrePartie("Alura", "Quelaana", passerTourOK.getId());
 //       partieService.demarrerPartie(1L);
-       joueurService.passerSonTour("Baldir", 1L);
-//        joueurService.definirJoueurSuivant("Alura", 1L);
+//       joueurService.passerSonTour("Baldir", 1L);
+//       joueurService.definirJoueurSuivant("Alura", 1L);
        
         
         

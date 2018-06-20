@@ -104,10 +104,10 @@ public class JoueurService {
                     joueurSuivant = dao.rechercherParOrdre(ordreSuivant, idPartie);
             }
            
-        } else {
+        }
             joueurSuivant.setEtatJoueur(Joueur.EtatJoueur.A_LA_MAIN);
             dao.modifier(joueurSuivant);
-        }
+        
             
         
         

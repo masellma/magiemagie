@@ -81,6 +81,18 @@ public class CarteDAO {
         em.getTransaction().commit();
         
     }
+
+    public List<Joueur> getJoueurPartie(Long idPartie) {
+        
+        EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
+        
+        Query query = em.createQuery("SELECT j FROM Joueur j JOIN j.partieActuelle p WHERE p.id = :idPartie");
+        query.setParameter("idPartie", idPartie);
+        
+        List<Joueur> joueurs = query.getResultList();
+        return joueurs;
+        
+    }
     
     
     
