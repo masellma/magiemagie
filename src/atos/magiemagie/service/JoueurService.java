@@ -22,7 +22,7 @@ public class JoueurService {
     private JoueurDAO dao = new JoueurDAO();
     private PartieDAO partieDao = new PartieDAO();
     private CarteDAO CarteDao = new CarteDAO();
-    private CarteService carteServ = new CarteService();
+    private CarteService carteServ = CarteService.instantiate();
     
     public Joueur rejoindrePartie(String nomJoueur, String avatar, long idPartie){
         

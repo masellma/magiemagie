@@ -11,7 +11,11 @@ import atos.magiemagie.dao.PartieDAO;
 import atos.magiemagie.entity.Carte;
 import atos.magiemagie.entity.Joueur;
 import atos.magiemagie.entity.Partie;
+import java.util.List;
 import java.util.Random;
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 
 /**
  *
@@ -19,10 +23,18 @@ import java.util.Random;
  */
 public class CarteService {
     
-    CarteDAO carteDAO = new CarteDAO();
-    JoueurDAO joueurDAO = new JoueurDAO();
-    PartieDAO PartieDAO = new PartieDAO();
-    JoueurService joueurServ = new JoueurService();
+    private CarteDAO carteDAO = new CarteDAO();
+    private JoueurDAO joueurDAO = new JoueurDAO();
+    private PartieDAO PartieDAO = new PartieDAO();
+    private JoueurService joueurServ = new JoueurService();
+    private static CarteService singleton = new CarteService();
+    
+    private CarteService(){}
+    
+    public static CarteService instantiate(){
+        
+        return CarteService.singleton;
+    }
     
     public Carte piocherCarte(Joueur joueur){
         Carte carte = new Carte();
@@ -52,16 +64,16 @@ public class CarteService {
         String card2Compare = carte2.getTypeCarte().toString();
         
         //Check dans le tableau des sorts si correspondance
-        if ( (card1Compare == "CORNE_DE_LICORNE" && card2Compare == "BAVE_DE_CRAPAUD") || (card1Compare == "BAVE_DE_CRAPAUD" && card2Compare == "CORNE_DE_LICORNE"))
-            carteDAO.sortInvisibilite();
-        else if ( (card1Compare == "CORNE_DE_LICORNE" && card2Compare == "MANDRAGORE") || (card1Compare == "MANDRAGORE" && card2Compare == "CORNE_DE_LICORNE"))
-            carteDAO.sortHypnose();
-        else if ((card1Compare == "LAPIS_LAZULI" && card2Compare == "AILE_DE_CHAUVE_SOURIS") || (card1Compare == "AILE_DE_CHAUVE_SOURIS" && card2Compare == "LAPIS_LAZULI"))
-            carteDAO.sortDivination();
-        else if ((card1Compare == "LAPIS_LAZULI" && card2Compare == "BAVE_DE_CRAPAUD") || (card1Compare == "BAVE_DE_CRAPAUD" && card2Compare == "LAPIS_LAZULI"))
-            carteDAO.sortPhiltreAmour();
-        else if ((card1Compare == "AILE_DE_CHAUVE_SOURIS" && card2Compare == "MANDRAGORE") || (card1Compare == "MANDRAGORE" && card2Compare == "AILE_DE_CHAUVE_SOURIS"))
-            carteDAO.sortSommeilProfond();
+        if ( (card1Compare == "CORNE_LICORNE" && card2Compare == "BAVE_CRAPAUD") || (card1Compare == "BAVE_CRAPAUD" && card2Compare == "CORNE_LICORNE"))
+            sortInvisibilite(idPartie, joueurPseudo);
+        else if ( (card1Compare == "CORNE_LICORNE" && card2Compare == "MANDRAGORE") || (card1Compare == "MANDRAGORE" && card2Compare == "CORNE_LICORNE"))
+            sortHypnose();
+        else if ((card1Compare == "LAPIS_LAZULI" && card2Compare == "AILE_CHAUVE_SOURIS") || (card1Compare == "AILE_CHAUVE_SOURIS" && card2Compare == "LAPIS_LAZULI"))
+            sortDivination();
+        else if ((card1Compare == "LAPIS_LAZULI" && card2Compare == "BAVE_CRAPAUD") || (card1Compare == "BAVE_CRAPAUD" && card2Compare == "LAPIS_LAZULI"))
+            sortPhiltreAmour();
+        else if ((card1Compare == "AILE_CHAUVE_SOURIS" && card2Compare == "MANDRAGORE") || (card1Compare == "MANDRAGORE" && card2Compare == "AILE_CHAUVE_SOURIS"))
+            sortSommeilProfond();
         
         //Supprime les cartes de la main du joueur
         carteDAO.supprimerCarte(carte1);
@@ -72,6 +84,58 @@ public class CarteService {
         
         
     } 
+    
+    
+    public void sortInvisibilite(Long idPartie, String nomLanceur) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
+        
+        Query query = em.createQuery("SELECT j FROM Joueur j JOIN j.partieActuelle p WHERE p.id = :idPartie AND j.pseudo != :nomLanceur");
+        query.setParameter("idPartie", idPartie);
+        query.setParameter("nomLanceur", nomLanceur);
+        Joueur joueurLanceur = joueurDAO.rechercherParPseudo(nomLanceur);
+        
+        List<Joueur> joueurs = query.getResultList();
+        
+        for (Joueur joueur : joueurs){
+            volerUneCarte(nomLanceur, joueur.getPseudo(), idPartie);
+        }
+    }
+    
+    public void sortHypnose() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void sortDivination() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void sortPhiltreAmour() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void sortSommeilProfond() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+    public void volerUneCarte(String pseudoLanceur, String pseudoCible, Long idPartie) {
+        
+        Joueur joueur = joueurDAO.rechercherParPseudo(pseudoLanceur);
+        Partie partie = PartieDAO.rechercherParId(idPartie);
+        
+        List<Carte> cartes = carteDAO.getJoueurCarte(pseudoCible, partie);
+        
+        //Création du random number
+        Random r = new Random();
+        int random = r.nextInt(cartes.size());
+        Carte carteVolee = cartes.get(random);
+        
+        //Change de proprio la carte volée
+        carteVolee.setJoueur(joueur);
+        carteDAO.modifier(carteVolee);
+        
+    }
     
     
 }

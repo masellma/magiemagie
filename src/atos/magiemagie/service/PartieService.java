@@ -23,7 +23,7 @@ public class PartieService {
     private PartieDAO dao = new PartieDAO();
     private JoueurDAO JoueurDAO = new JoueurDAO();
     private CarteDAO CarteDAO = new CarteDAO();
-    private CarteService carteServ = new CarteService();
+    private CarteService carteServ = CarteService.instantiate();
     
     public List<Partie> listerPartiesNonDemarrees(){
         return dao.listerPartiesNonDemarrees();
