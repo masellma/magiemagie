@@ -5,6 +5,7 @@
  */
 package atos.magiemagie.test;
 
+import atos.magiemagie.dao.JoueurDAO;
 import atos.magiemagie.entity.Joueur;
 import atos.magiemagie.entity.Partie;
 import atos.magiemagie.service.JoueurService;
@@ -20,6 +21,7 @@ public class JoueurServiceTest {
     
     private JoueurService joueurService = new JoueurService();
     private PartieService partieService = new PartieService();
+    private JoueurDAO joueurDao = new JoueurDAO();
     
 //    @Test
     public void rejoindrePartieOK(){
@@ -54,13 +56,20 @@ public class JoueurServiceTest {
 //       joueurService.rejoindrePartie("Angraal", "Melusine", passerTourOK.getId());
 //       joueurService.rejoindrePartie("Alura", "Quelaana", passerTourOK.getId());
 //       partieService.demarrerPartie(1L);
-//       joueurService.passerSonTour("Baldir", 1L);
+       joueurService.passerSonTour("Baldir", 1L);
 //       joueurService.definirJoueurSuivant("Alura", 1L);
        
         
         
         
         
+    }
+//    @Test
+    public void reOrderOK(){
+        Joueur joueur = joueurDao.rechercherParPseudo("Aremis");
+        
+        joueurService.reOrder(joueur.getOrdre(), joueur.getPseudo());
+        joueurDao.remove(joueur.getPseudo());
     }
     
     

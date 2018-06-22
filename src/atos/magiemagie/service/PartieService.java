@@ -11,6 +11,7 @@ import atos.magiemagie.dao.PartieDAO;
 import atos.magiemagie.entity.Carte;
 import atos.magiemagie.entity.Joueur;
 import atos.magiemagie.entity.Partie;
+import atos.magiemagie.main.Main;
 import java.util.List;
 import java.util.Random;
 
@@ -42,8 +43,8 @@ public class PartieService {
         Partie p = dao.rechercherParId(idPartie);
         
         // Vérifie que le nombre de joueurs ne soit pas inférieur à 2
-        if (p.getJoueurs().size() < 2){
-            throw new RuntimeException("Lol ça marche pas !");
+        if (p.getJoueurs().size() < 1){
+            System.out.println("Vous n'avez pas assez de joueurs (Minimum:2 / Actuel:"+p.getJoueurs().size()+")");
         } else {
             //Change l'état du joueur 
             Joueur joueur1 = JoueurDAO.rechercherParOrdre(1L, p.getId());
@@ -63,6 +64,8 @@ public class PartieService {
 
         return p;
     }
+
+    
 
     
 

@@ -24,7 +24,7 @@ public class PartieDAO {
         EntityManager em =  Persistence.createEntityManagerFactory("PU").createEntityManager();
         
 //        Query query = em.createQuery("SELECT p FROM Partie p JOIN p.joueurs j WHERE j.etatJoueur != 'PERDU' GROUP BY p.id HAVING COUNT(j.id) = 1");
-          Query query = em.createQuery("select p FROM Partie p EXCEPT SELECT p FROM Partie p JOIN p.joueurs j WHERE j.EtatJoueur IN (:EtatJoueur_gagne, :EtatJoueur_alamain");
+          Query query = em.createQuery("SELECT p FROM Partie p EXCEPT SELECT p FROM Partie p JOIN p.joueurs j WHERE j.etatJoueur IN (:EtatJoueur_gagne, :EtatJoueur_alamain)");
           query.setParameter("EtatJoueur_gagne", Joueur.EtatJoueur.GAGNE);
           query.setParameter("EtatJoueur_alamain", Joueur.EtatJoueur.A_LA_MAIN);
         
@@ -54,4 +54,28 @@ public class PartieDAO {
         return em.find(Partie.class, idPartie);
         
      }
+    
+    public List<Joueur> getJoueurPartie(Long idPartie) {
+        
+        EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
+        
+        Query query = em.createQuery("SELECT j FROM Joueur j JOIN j.partieActuelle p WHERE p.id = :idPartie");
+        query.setParameter("idPartie", idPartie);
+        
+        List<Joueur> joueurs = query.getResultList();
+        return joueurs;
+        
+    }
+
+    public Joueur JoueurALaMain(Long idPartie) {
+        
+        EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
+        Query query = em.createQuery("SELECT j FROM Joueur j JOIN j.partieActuelle p WHERE j.etatJoueur=:etatJoueur AND p.id = :idPartie ");
+        query.setParameter("idPartie", idPartie);
+        query.setParameter("etatJoueur", Joueur.EtatJoueur.A_LA_MAIN);
+        
+        List<Joueur> joueurs = query.getResultList();
+        Joueur joueur = joueurs.get(0);
+        return joueur;
+    }
 }

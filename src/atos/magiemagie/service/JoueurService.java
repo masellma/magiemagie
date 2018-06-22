@@ -89,7 +89,7 @@ public class JoueurService {
         else
             joueurSuivant = dao.rechercherParOrdre(ordreSuivant, idPartie);
             
-        if (joueurSuivant.getEtatJoueur() != Joueur.EtatJoueur.PAS_LA_MAIN){
+        if (joueurSuivant.getEtatJoueur() != Joueur.EtatJoueur.PAS_LA_MAIN ){
             while (joueurSuivant.getEtatJoueur() != Joueur.EtatJoueur.PAS_LA_MAIN) {  
                 
                 if (joueurSuivant.getEtatJoueur() == Joueur.EtatJoueur.SOMMEIL_PROFOND){
@@ -103,18 +103,39 @@ public class JoueurService {
                 else
                     joueurSuivant = dao.rechercherParOrdre(ordreSuivant, idPartie);
             }
-           
         }
             joueurSuivant.setEtatJoueur(Joueur.EtatJoueur.A_LA_MAIN);
             dao.modifier(joueurSuivant);
-        
-            
-        
-        
         return joueur;
+    }
+    
+    public void reOrder(Long idPartie, String pseudoJoueur){
         
+        Joueur joueur = dao.rechercherParPseudo(pseudoJoueur);
+        List<Joueur> joueurs = dao.reOrderQuery(joueur.getOrdre(), idPartie);
         
+        if (joueurs == null){
+            System.out.println("Aucun changement disponible");
+        } else {
+            for (Joueur j : joueurs){
+                Long reOrder = j.getOrdre()-1;
+                System.out.print(j.getOrdre()+" -> ");
+                System.out.println(reOrder);
+                j.setOrdre(reOrder);
+                dao.modifier(j);
+            }
+        }
         
+    }
+
+    public void afficherCarte(String pseudoJoueurActif, Long idPartie) {
+        
+        Joueur joueur = dao.rechercherParPseudo(pseudoJoueurActif);
+        List<Carte> cartesJoueur = joueur.getCartes();
+        
+        for (Carte carte : cartesJoueur){
+            System.out.print(carte.getId()+":"+carte.getTypeCarte()+" | ");
+        }
         
     }
     

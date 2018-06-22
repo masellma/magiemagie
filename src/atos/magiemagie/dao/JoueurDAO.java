@@ -5,6 +5,7 @@
  */
 package atos.magiemagie.dao;
 
+import atos.magiemagie.entity.Carte;
 import atos.magiemagie.entity.Joueur;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -76,6 +77,43 @@ public class JoueurDAO {
         em.getTransaction().begin();
         em.merge(joueur);
         em.getTransaction().commit();
+    }
+
+    public void remove(String joueurQuit) {
+        Joueur joueur = rechercherParPseudo(joueurQuit);
+        
+        EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
+        
+        joueur = em.find(Joueur.class, joueur.getId());
+        
+        em.getTransaction().begin();
+        em.remove(joueur);
+        em.getTransaction().commit();
+    }
+
+    public int compteJoueurActif(Long idPartie) {
+        
+        EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
+        Query query = em.createQuery("SELECT COUNT(j) FROM Joueur j JOIN j.partieActuelle p WHERE j.etatJoueur != :etatJoueur AND p.id = :idPartie");
+        query.setParameter("idPartie", idPartie);
+        query.setParameter("etatJoueur", Joueur.EtatJoueur.PERDU);
+        
+        int result = (int) query.getFirstResult();
+        return result;
+        
+    }
+    
+    public List<Joueur> reOrderQuery(Long ordreJoueur, Long idPartie){
+        
+        EntityManager em = Persistence.createEntityManagerFactory("PU").createEntityManager();
+        Query query = em.createQuery("SELECT j FROM Joueur j JOIN j.partieActuelle p WHERE p.id = :idPartie AND j.ordre > :ordreJoueur");
+        query.setParameter("idPartie", idPartie);
+        query.setParameter("ordreJoueur", ordreJoueur);
+        
+        List<Joueur> joueurs = query.getResultList();
+        return joueurs;
+        
+        
     }
 
     

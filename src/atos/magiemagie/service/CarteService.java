@@ -70,9 +70,9 @@ public class CarteService {
         else if ( (card1Compare == "CORNE_LICORNE" && card2Compare == "MANDRAGORE") || (card1Compare == "MANDRAGORE" && card2Compare == "CORNE_LICORNE"))
             sortHypnose(idPartie, joueurPseudo);
         else if ((card1Compare == "LAPIS_LAZULI" && card2Compare == "AILE_CHAUVE_SOURIS") || (card1Compare == "AILE_CHAUVE_SOURIS" && card2Compare == "LAPIS_LAZULI"))
-            sortDivination();
+            sortDivination(idPartie);
         else if ((card1Compare == "LAPIS_LAZULI" && card2Compare == "BAVE_CRAPAUD") || (card1Compare == "BAVE_CRAPAUD" && card2Compare == "LAPIS_LAZULI"))
-            sortPhiltreAmour();
+            sortPhiltreAmour(joueurPseudo, idPartie);
         else if ((card1Compare == "AILE_CHAUVE_SOURIS" && card2Compare == "MANDRAGORE") || (card1Compare == "MANDRAGORE" && card2Compare == "AILE_CHAUVE_SOURIS"))
             sortSommeilProfond();
         
@@ -89,8 +89,8 @@ public class CarteService {
     
     public void sortInvisibilite(Long idPartie, String nomLanceur) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        
-        List<Joueur> joueurs = carteDAO.getJoueurPartie(idPartie);
+        System.out.println("Invisibilité lancée");
+        List<Joueur> joueurs = PartieDAO.getJoueurPartie(idPartie);
         
         for (Joueur joueur : joueurs){
             volerUneCarte(nomLanceur, joueur.getPseudo(), idPartie);
@@ -98,30 +98,26 @@ public class CarteService {
     }
     
     public void sortHypnose(Long idPartie, String nomLanceur) {
-        
-        System.out.print("Choisissez votre cible: ");
-        Scanner selectTarget = new Scanner(System.in);
-        String cible = selectTarget.nextLine();
+        System.out.println("Hypnose lancée");
+        Joueur joueurCible = choisirCible();
         Joueur joueurLanceur = joueurDAO.rechercherParPseudo(nomLanceur);
-        Joueur joueurCible = joueurDAO.rechercherParPseudo(cible);
+        
         
         if (joueurCible == null) {
             while (joueurCible == null) {                
                 
             System.out.println("Aucun joueur à cette table ne porte ce nom. Veuillez entrer un nom valide");
-            selectTarget = new Scanner(System.in);
-            cible = selectTarget.nextLine();
-            joueurCible = joueurDAO.rechercherParPseudo(cible);
+            joueurCible = choisirCible();
             }
         }
         
         
         
         Partie partie = PartieDAO.rechercherParId(idPartie);
-        List<Carte> joueurCibleCarte = carteDAO.getJoueurCarte(cible, partie);
+        List<Carte> joueurCibleCarte = carteDAO.getJoueurCarte(joueurCible.getPseudo(), partie);
         
         for (int i = 0; i < 3; i++) {
-            volerUneCarte(nomLanceur, cible, idPartie);
+            volerUneCarte(nomLanceur, joueurCible.getPseudo(), idPartie);
         }
         System.out.print("Choisissez une carte:");
         Scanner selectCard = new Scanner(System.in);
@@ -135,33 +131,60 @@ public class CarteService {
         
     }
 
-    public void sortDivination() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void sortDivination(Long idPartie) {
+        System.out.println("Divination lancée");
+   Partie partie = PartieDAO.rechercherParId(idPartie);
+   List<Joueur> joueurs = PartieDAO.getJoueurPartie(idPartie);
+   
+   for (Joueur joueur : joueurs){
+       System.out.println(joueur.getPseudo()+" possède dans sa main les cartes suivantes:");
+       List<Carte> cartesJoueur = carteDAO.getJoueurCarte(joueur.getPseudo(), partie);
+        for (Carte carteJoueur : cartesJoueur){
+            System.out.print(carteJoueur.getTypeCarte()+" - ");
+        }
+        System.out.println("");
+   }
+        
+        
     }
 
-    public void sortPhiltreAmour() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void sortPhiltreAmour(String pseudoLanceur, Long idPartie) {
+        System.out.println("Philtre d'Amour lancé");
+        Joueur joueurCible = choisirCible();
+        List<Carte> cartesJoueur = joueurCible.getCartes();
+        int nbCartesVolees;
+        if (cartesJoueur.size() % 2 == 0){
+            nbCartesVolees = cartesJoueur.size()/2;
+            for (int i = 0; i < nbCartesVolees; i++) {
+                volerUneCarte(pseudoLanceur, joueurCible.getPseudo(), idPartie);
+            }
+        } else {
+            nbCartesVolees = ((cartesJoueur.size() - 1)/2)+1;
+            for (int i = 0; i < nbCartesVolees; i++) {
+                volerUneCarte(pseudoLanceur, joueurCible.getPseudo(), idPartie);
+            }
+        }
+        
     }
 
     public void sortSommeilProfond() {
         
-        System.out.print("Choisissez votre cible: ");
-        Scanner selectTarget = new Scanner(System.in);
-        String cible = selectTarget.nextLine();
-        Joueur joueurCible = joueurDAO.rechercherParPseudo(cible);
+        System.out.println("Sommeil profond lancé");
+        Joueur joueurCible = choisirCible();
         
         if (joueurCible == null) {
             while (joueurCible == null) {                
                 
             System.out.println("Aucun joueur à cette table ne porte ce nom. Veuillez entrer un nom valide");
-            selectTarget = new Scanner(System.in);
-            cible = selectTarget.nextLine();
+            Scanner selectTarget = new Scanner(System.in);
+            String cible = selectTarget.nextLine();
             joueurCible = joueurDAO.rechercherParPseudo(cible);
             }
         }
         
         joueurCible.setEtatJoueur(Joueur.EtatJoueur.SOMMEIL_PROFOND);
         joueurDAO.modifier(joueurCible);
+        System.out.println(joueurCible+" dort jusqu'au tour prochain");
         
         
     }
@@ -183,6 +206,26 @@ public class CarteService {
         carteVolee.setJoueur(joueur);
         carteDAO.modifier(carteVolee);
         
+    }
+
+    public Joueur choisirCible() {
+        System.out.print("Choisissez votre cible: ");
+        Scanner selectTarget = new Scanner(System.in);
+        String cible = selectTarget.nextLine();
+        Joueur joueurCible = joueurDAO.rechercherParPseudo(cible);
+        
+        if (joueurCible.getEtatJoueur().equals(Joueur.EtatJoueur.PERDU)) {
+            System.out.println("Ce joueur ne peut être ciblé");
+            choisirCible();
+        }
+        return joueurCible;
+    }
+    
+    public Carte choisirCarte(){
+        Scanner scan1 = new Scanner(System.in);
+        Long carte1 = scan1.nextLong();
+        Carte card = carteDAO.rechercherParId(carte1);
+        return card;
     }
     
     
